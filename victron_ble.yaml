@@ -1,87 +1,57 @@
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "xxxxxxxxxxxxxxxxxx"
+
+ota:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: x.x.x.x
+    # Set this to the IP address of the router. Often ends with .1
+    gateway: x.x.x.x
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: 255.255.255.0
+
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esphome-Web-A9E684"
+    password: "xxxxxxx"
+
 substitutions:
   # Set the MAC addresses and encryption keys of your Victron devices here
   # The values here are examples and cannot work for your devices
-  smart_shunt_mac_address: 60:A4:23:91:8F:55
-  smart_shunt_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70dcd
-  smart_solar_mac_address: 60:A4:23:91:8F:56
-  smart_solar_encryption_key: 0df4d0395b7d1a876c0c33ecb9e70aea
+  smart_solar_mac_address: xx:xx:xx:xx:xx:xx
+  smart_solar_encryption_key: xxxxxxxxxxxxxxx
 
 esphome:
   name: "victron-ble"
 
 external_components:
-  - source: github://Fabian-Schmidt/esphome-victron_ble
-
-esp32:
-  board: esp32dev
-
-logger:
-  level: DEBUG
+  - source: github://brubrain/esphome-victron_ble
 
 esp32_ble_tracker:
 
 victron_ble:
-  - id: MySmartShunt
-    mac_address: ${smart_shunt_mac_address}
-    bindkey: ${smart_shunt_encryption_key}
-
-    # Advanced users can use `on_*_message` action. The data is in the `message` variable.
-    on_battery_monitor_message:
-      - logger.log: "Message from Battery Monitor."
-    on_solar_charger_message:
-      - logger.log: "Message from Solar Charger."
-    on_inverter_message:
-      - logger.log: "Message from Inverter."
-    on_dcdc_converter_message:
-      - logger.log: "Message from DC/DC Converter."
-    on_smart_lithium_message:
-      - logger.log: "Message from Smart Lithium."
-    on_inverter_rs_message:
-      - logger.log: "Message from Inverter RS."
-    on_smart_battery_protect_message:
-      - logger.log: "Message from Smart Battery Protect."
-    on_lynx_smart_bms_message:
-      - logger.log: "Message from Lynx Smart BMS."
-    on_multi_rs_message:
-      - logger.log: "Message from Multi RS."
-    on_ve_bus_message:
-      - logger.log: "Message from VE.Bus."
-    on_dc_energy_meter_message:
-      - logger.log: "Message from DC Energy Meter."
-
   - id: MySmartSolar
     mac_address: ${smart_solar_mac_address}
     bindkey: ${smart_solar_encryption_key}
 
 sensor:
-  # MySmartShunt
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Time remaining"
-    type: TIME_TO_GO
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Battery voltage"
-    type: BATTERY_VOLTAGE
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Starter Battery"
-    # BAUX_VOLTAGE or MID_VOLTAGE or TEMPERATURE.
-    # Depending on configuration of SmartShunt
-    type: AUX_VOLTAGE
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Current"
-    type: BATTERY_CURRENT
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Consumed Ah"
-    type: CONSUMED_AH
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "State of charge"
-    type: STATE_OF_CHARGE
-
   # MySmartSolar
   - platform: victron_ble
     victron_ble_id: MySmartSolar
@@ -106,11 +76,6 @@ sensor:
 
 binary_sensor:
   - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Battery has Alarm"
-    type: ALARM
-
-  - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT is in Fault state"
     type: DEVICE_STATE_FAULT
@@ -120,11 +85,6 @@ binary_sensor:
     type: CHARGER_ERROR
 
 text_sensor:
-  - platform: victron_ble
-    victron_ble_id: MySmartShunt
-    name: "Battery Alarm reason"
-    type: ALARM_REASON
-
   - platform: victron_ble
     victron_ble_id: MySmartSolar
     name: "MPPT state"
